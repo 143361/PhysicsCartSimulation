@@ -432,8 +432,8 @@ var timer = function() {
     
     //Draw data logger
     var drawDataLogger = function() {
-        var dLX = rampX - cos(rampAngle)*rampLength; 
-        var dLY = rampY - sin(rampAngle)*rampLength; 
+        var dLX = cartStartX-10; 
+        var dLY = cartStartY+30; 
         
          pushMatrix(); 
          translate(dLX-24, dLY-36); 
@@ -520,12 +520,12 @@ var scalingRatio = 0.99; //Fits values to screen
 
 
 /********************ERROR MESSAGES************************/ 
-var errorBoxX = 10; 
-var errorBoxY = 30; 
+var errorBoxX = 50; 
+var errorBoxY = 120; 
 
 var errorMessage = function(message) { 
     fill(0,255,0); 
-    rect(errorBoxX-10, errorBoxY-18, 300, 25);
+    rect(errorBoxX-10, errorBoxY-18, 350, 25);
     fill(0,0,0); 
     text(message, errorBoxX, errorBoxY); 
 };
@@ -974,7 +974,7 @@ var drawVelocityTable = function() {
     timeStatus = 0; 
 }
 
-if (rampAngle >= 80) { 
+if (rampAngle >= 80*angleSetting) { 
     fill(0, 0, 0);
     errorMessage("This angle will most probably not be feasible");  
 }
