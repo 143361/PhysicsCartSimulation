@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html> 
   <head>
-    <title>Processing.JS inside Webpages: Template</title> 
+    <title>Physics Cart Simulation</title> 
   </head>
   <body>
 	<!--This draws the canvas on the webpage -->
@@ -432,16 +432,16 @@ var timer = function() {
     
     //Draw data logger
     var drawDataLogger = function() {
-        var dLX = cartStartX-10; 
-        var dLY = cartStartY+30; 
+        var dLX = cartStartX-25; 
+        var dLY = cartStartY-10; 
         
          pushMatrix(); 
-         translate(dLX-24, dLY-36); 
-         rotate(rampAngle); 
-         fill(0, 255, 217);
-         triangle(28,20, 4,7, 28,+2);  
-         fill(255,0,0);
-         rect(0, 0, 20, 20); 
+             translate(dLX, dLY); 
+             rotate(rampAngle); 
+             fill(0, 255, 217);
+             triangle(28,20, 4,7, 28,+2);  
+             fill(255,0,0);
+             rect(0, 0, 20, 20); 
          popMatrix(); 
          
     }; 
@@ -592,7 +592,7 @@ var errorMessage = function(message) {
      var velDVRange = 200; 
      var velIVRange = 300; 
     
-     var maxAccel = 9.81*1.1; 
+     var maxAccel = (9.81*1.1); 
      var maxVel = 100; 
      var maxTime = (2); 
      
@@ -678,10 +678,11 @@ var errorMessage = function(message) {
                     //Draw the ellipse
                      strokeWeight(3); 
                      fill(255, 0, 0);
-                     ellipse(graphXPosition+(((timerMsecond/1000)+timerSecond)/maxTime)*velIVRange, (graphYPosition+velDVRange) - (velDVRange/2) - (cartVel/maxVel)*velDVRange, 1, 1);  
+                     ellipse(graphXPosition+(((timerMsecond/1000)+timerSecond)/maxTime)*velIVRange, ((graphYPosition+velDVRange) - (velDVRange/2) - ((cartVel/maxVel)*velDVRange)), 1, 1);  
                      strokeWeight(0); 
-                 }     
-             }     
+                 } 
+                 
+             }
         }
      }
  
@@ -842,7 +843,7 @@ var apparatusList = function() {
             text(Math.floor(accelResults[4]), 560, 530); 
 
 
-         text("TIME (s)", 500, 430); 
+         text("TIME (ms)", 500, 430); 
             text(Math.floor(graphTime[0]), 500, 450); 
             text(Math.floor(graphTime[1]), 500, 470); 
             text(Math.floor(graphTime[2]), 500, 490); 
@@ -979,9 +980,10 @@ if (rampAngle >= 80*angleSetting) {
     errorMessage("This angle will most probably not be feasible");  
 }
 
-if (key === 32) { 
-    errorMessage(""); 
-} 
+if (mass > 2) {
+    fill(0,0,0); 
+    errorMessage("Many cart's are not this heavy (needs weights)")
+}
  
     showResultsButton(500, 320, 164, 29);
    
@@ -994,8 +996,6 @@ if (key === 32) {
      textSize(12); 
      text("VELOCITY: " + Math.floor(cartVel), 230, 547); 
      text("ACCELERATION: " + Math.floor(cartAccel), 230, 577);
-     
-    
      
      //Instructions
 
