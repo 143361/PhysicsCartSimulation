@@ -975,14 +975,14 @@ var drawVelocityTable = function() {
     timeStatus = 0; 
 }
 
-if (rampAngle >= 80*angleSetting) { 
+if (rampAngle >= 70*angleSetting) { 
     fill(0, 0, 0);
     errorMessage("This angle will most probably not be feasible");  
 }
 
-if (mass > 2) {
+if (mass > 0.6) {
     fill(0,0,0); 
-    errorMessage("Many cart's are not this heavy (needs weights)")
+    errorMessage("Many cart's are not this heavy (needs weights)"); 
 }
  
     showResultsButton(500, 320, 164, 29);
