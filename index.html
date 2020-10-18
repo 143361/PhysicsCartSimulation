@@ -21,11 +21,7 @@
       strokeWeight(0.0001); 
       fill(161, 228, 255);     
       rect(440,0,400,600); 
-
-     //TITLE
-         fill(0,0,0); 
-         textSize(18); 
-         text("CART ON AN INCLINE SIMULATION", 45, 22); 
+ 
         
     //Setting font
         var f = createFont("Helvetica Bold");
@@ -37,12 +33,12 @@
         var angleSetting = 0.01745329251; 
      
      //Independant variables: 
-         var mass = 0.5;
+         var mass = 1.5;
          var rampAngle = 20; 
          var cartAngle = 0;
          
      //Kinematics variables
-         var surfaceArea = 1; 
+         var surfaceArea = 0.25; 
          var cD = 1/500; 
          var g = 9.81; 
         
@@ -196,8 +192,8 @@ var timer = function() {
            var defaultPosition = [mass,rampAngle,surfaceArea]; 
          
          //Minimum and maximum slider values
-           var allMin = [0.2,0,0.1]; 
-           var allMax = [1,90,2]; 
+           var allMin = [0, 0, 0]; 
+           var allMax = [3, 90 , 0.5]; 
            
          //Create as many new sliders as are defined in the list of sliders
            for (var i = 0; i < defaultPosition.length; i++) {
@@ -432,16 +428,24 @@ var timer = function() {
     
     //Draw data logger
     var drawDataLogger = function() {
-        var dLX = cartStartX-25; 
-        var dLY = cartStartY-10; 
+        
+        //Position data logger to be behind cart
+        var dLX = rampX - (rampLength+35)*cos(rampAngle)+(cartHeight+(cartWidth/7))*sin(rampAngle);
+        
+        var dLY = rampY - (rampLength+35)*sin(rampAngle)-(cartHeight+(cartWidth/7))*cos(rampAngle)-10;
         
          pushMatrix(); 
              translate(dLX, dLY); 
              rotate(rampAngle); 
-             fill(0, 255, 217);
-             triangle(28,20, 4,7, 28,+2);  
-             fill(255,0,0);
+             fill(94, 94, 94);
+             triangle(28,20, 4,7, 28,+2);
+             strokeWeight(2); 
+             fill(0,0,0); 
+             rect(0, 22, 45, 5); 
+             fill(94, 94, 94);
              rect(0, 0, 20, 20); 
+             fill(255, 0,0);
+             ellipse(13,6,4,4)
          popMatrix(); 
          
     }; 
@@ -520,14 +524,12 @@ var scalingRatio = 0.99; //Fits values to screen
 
 
 /********************ERROR MESSAGES************************/ 
-var errorBoxX = 50; 
-var errorBoxY = 120; 
 
-var errorMessage = function(message) { 
+var errorMessage = function(message, x, y) { 
     fill(0,255,0); 
-    rect(errorBoxX-10, errorBoxY-18, 350, 25);
+    rect(x-10, y-18, 350, 25);
     fill(0,0,0); 
-    text(message, errorBoxX, errorBoxY); 
+    text(message, x, y); 
 };
 
 
@@ -592,9 +594,9 @@ var errorMessage = function(message) {
      var velDVRange = 200; 
      var velIVRange = 300; 
     
-     var maxAccel = (9.81*1.1); 
+     var maxAccel = (10); 
      var maxVel = 100; 
-     var maxTime = (2); 
+     var maxTime = 3.5; 
      
         //Graph background
         fill(247, 247, 247);
@@ -662,7 +664,7 @@ var errorMessage = function(message) {
                         //Draw the ellipse
                          fill(255, 0, 0);
                          strokeWeight(3); 
-                         ellipse(graphXPosition+(((timerMsecond/1000)+timerSecond)/maxTime)*accelIVRange, ((graphYPosition+accelDVRange) - (accelDVRange/2) - ((cartAccel/maxAccel)*accelDVRange)), 1, 1); 
+                         ellipse(graphXPosition+(((timerMsecond/1000)+timerSecond)/maxTime)*accelIVRange, ((graphYPosition+accelDVRange) - ((cartAccel/maxAccel)*accelDVRange)), 1, 1); 
                          strokeWeight(0);     
                     } 
              } 
@@ -910,7 +912,18 @@ var drawVelocityTable = function() {
     fill(179, 226, 242);  
     rect(10, 387, 192, 205);  
     
+    fill(250, 202, 100); 
+    rect(0,0,407,30); 
+     
+     //TITLE
+         fill(0,0,0); 
+         textSize(18); 
+         text("CART ON AN INCLINE SIMULATION", 45, 22);
+     
+     
+     
     //Draw sliders
+    textSize(12); 
     drawGUI(); 
              fill(0, 0, 0);
              text("MASS (kg)", 30, 410); 
@@ -969,20 +982,25 @@ var drawVelocityTable = function() {
         drawEraseButton(); 
         
     //Error messages: 
- if (timerSecond === 59) { 
+ if (timerSecond > 10) { 
      fill(0,0,0);
-    errorMessage("You have been timing for over one minute.");  
-    timeStatus = 0; 
+    errorMessage("You have been timing for over 10s", 50, 260);  
+    timeStatus = -1; 
 }
 
 if (rampAngle >= 70*angleSetting) { 
     fill(0, 0, 0);
-    errorMessage("This angle will most probably not be feasible");  
+    errorMessage("This angle will most probably not be feasible", 50, 220);  
 }
 
-if (mass > 0.6) {
+if (mass > 1.5) {
     fill(0,0,0); 
-    errorMessage("Many cart's are not this heavy (needs weights)"); 
+    errorMessage("Many cart's are not this heavy (needs weights)", 50, 200); 
+}
+     
+if (surfaceArea > 0.4) {
+    fill(0,0,0); 
+    errorMessage("This is a very large surface area!", 50, 240); 
 }
  
     showResultsButton(500, 320, 164, 29);
