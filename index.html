@@ -375,6 +375,12 @@ var timer = function() {
             //Motion sensor
                 fill(255, 89, 89);
                 rect(X + cartWidth/4, Y - 5, cartWidth/2, cartHeight/2);
+             
+            //Cardboard for surface area
+             strokeWeight(1);
+             fill(196, 129, 4); 
+             rect(X+cartWidth, Y-surfaceArea*40, 2, cartHeight+surfaceArea*40); 
+             
          }; 
         
      
@@ -486,7 +492,7 @@ var scalingRatio = 0.99; //Fits values to screen
                     cartVel = cartVel + cartAccel;
                     
                     //If the cart hits the barrier 
-                        if (cartX > 200) {
+                        if (cartX > rampLength-(cartWidth+5)) {
                             cartVel = -1*(sqrt(0.55))*cartVel; 
                             howManyBounce ++; 
                             bounced = true;    
@@ -527,7 +533,7 @@ var scalingRatio = 0.99; //Fits values to screen
 
 var errorMessage = function(message, x, y) { 
     fill(0,255,0); 
-    rect(x-10, y-18, 350, 25);
+    rect(x-10, y-18, 385, 25);
     fill(0,0,0); 
     text(message, x, y); 
 };
@@ -596,7 +602,7 @@ var errorMessage = function(message, x, y) {
     
      var maxAccel = (10); 
      var maxVel = 100; 
-     var maxTime = 3.5; 
+     var maxTime = ((-16/3.141592654)*rampAngle) + 8; 
      
         //Graph background
         fill(247, 247, 247);
@@ -604,7 +610,7 @@ var errorMessage = function(message, x, y) {
 
  //Drawing graphs 
  var drawResultsGraph = function() { 
-
+     
     if (displayAccelResults === true) {
     
         strokeWeight(0.00001); 
@@ -618,9 +624,9 @@ var errorMessage = function(message, x, y) {
             text("ACCEL (ms^2) versus time (s)", graphXPosition+50, graphYPosition-11); 
             
              fill(0,0,0);
-             text(-9.81, graphXPosition-50, graphYPosition + accelDVRange);
+             text(0, graphXPosition-15, graphYPosition + accelDVRange);
              
-             text(0, graphXPosition-20, graphYPosition + accelDVRange/2); 
+             //text(0, graphXPosition-20, graphYPosition+10); 
             
              text(9.81, graphXPosition-45, graphYPosition+10);
              
@@ -770,30 +776,37 @@ var errorMessage = function(message, x, y) {
  
 /***********************APPARTUS LIST*************************/
 var apparatusListX = 215; 
-var apparatusListY = 387; 
+var apparatusListY = 385; 
 var apparatusListWidth = 200; 
-var apparatusListHeight = 130; 
+var apparatusListHeight = 135; 
 
 var apparatusList = function() { 
     fill(179, 226, 242);
     rect(apparatusListX, apparatusListY, apparatusListWidth, apparatusListHeight); 
     
-    textSize(11)
-    
+    textSize(12); 
     fill(0,0,0);
-    text("APPARATUS LIST", apparatusListX+(apparatusListWidth*0.08), apparatusListY+(apparatusListHeight*0.2)); 
+    text("APPARATUS LIST", apparatusListX+(apparatusListWidth*0.08), apparatusListY+(apparatusListHeight*0.18)); 
     
-    text("Clamp stand", apparatusListX+(apparatusListWidth*0.08), apparatusListY+(apparatusListHeight*1.5*0.2)); 
     
-    text("Cart with motion sensor", apparatusListX+(apparatusListWidth*0.08), apparatusListY+(apparatusListHeight*2*0.2)); 
+    textSize(10)
     
-     text("Data logger", apparatusListX+(apparatusListWidth*0.08), apparatusListY+(apparatusListHeight*2.5*0.2)); 
+
+    text("Stand", apparatusListX+(apparatusListWidth*0.08), apparatusListY+(apparatusListHeight*1.5*0.18)); 
     
-    text("Ramp (length: " + rampLength*0.0025 + "m)", apparatusListX+(apparatusListWidth*0.08), apparatusListY+(apparatusListHeight*3*0.2)); 
+    text("Cart with motion sensor", apparatusListX+(apparatusListWidth*0.08), apparatusListY+(apparatusListHeight*2*0.18)); 
     
-      text("Clamp (Height: " + round(((rampY - clampY)*0.0025)*100)/100 + "m)", apparatusListX+(apparatusListWidth*0.08), apparatusListY+(apparatusListHeight*3.5*0.2)); 
+     text("Data logger", apparatusListX+(apparatusListWidth*0.08), apparatusListY+(apparatusListHeight*2.5*0.18)); 
+    
+    text("Ramp (length: " + rampLength*0.0025 + "m)", apparatusListX+(apparatusListWidth*0.08), apparatusListY+(apparatusListHeight*3*0.18)); 
+    
+      text("Clamp (Height: " + round(((rampY - clampY)*0.0025)*100)/100 + "m)", apparatusListX+(apparatusListWidth*0.08), apparatusListY+(apparatusListHeight*3.5*0.18)); 
       
-       text("Metal barrier", apparatusListX+(apparatusListWidth*0.08), apparatusListY+(apparatusListHeight*4*0.2)); 
+       text("Metal barrier", apparatusListX+(apparatusListWidth*0.08), apparatusListY+(apparatusListHeight*4*0.18)); 
+    
+    text("Cardboard: " + round(surfaceArea*100)/100 + " m^2", apparatusListX+(apparatusListWidth*0.08), apparatusListY+(apparatusListHeight*4.5*0.18));
+    
+    text("Weights: " + (round((mass-0.5)*100))/100 + " kg", apparatusListX+(apparatusListWidth*0.08), apparatusListY+(apparatusListHeight*5*0.18));
     
 }; 
  
@@ -984,23 +997,38 @@ var drawVelocityTable = function() {
     //Error messages: 
  if (timerSecond > 10) { 
      fill(0,0,0);
-    errorMessage("You have been timing for over 10s", 50, 260);  
+    errorMessage("You have been timing for over 10s", 30, 260);  
     timeStatus = -1; 
 }
 
 if (rampAngle >= 70*angleSetting) { 
     fill(0, 0, 0);
-    errorMessage("This angle will most probably not be feasible", 50, 220);  
+    errorMessage("This angle is very high and may damage equipment", 30, 220);  
+}
+     
+if (rampAngle <= 10*angleSetting) { 
+    fill(0, 0, 0);
+    errorMessage("Low angle incline may lead to small measurements", 30, 220);  
 }
 
-if (mass > 1.5) {
+if (mass > 2) {
     fill(0,0,0); 
-    errorMessage("Many cart's are not this heavy (needs weights)", 50, 200); 
+    errorMessage("The ramp/cart may not withstand this mass", 30, 200); 
+}
+     
+if (mass < 0.2) {
+    fill(0,0,0); 
+    errorMessage("Such a light cart will need to be home-made", 30, 200); 
 }
      
 if (surfaceArea > 0.4) {
     fill(0,0,0); 
-    errorMessage("This is a very large surface area!", 50, 240); 
+    errorMessage("This surface area may be unfeasible", 30, 240); 
+}
+     
+if (surfaceArea < 0.1) {
+    fill(0,0,0); 
+    errorMessage("This is a very small change surface area", 30, 240); 
 }
  
     showResultsButton(500, 320, 164, 29);
@@ -1008,12 +1036,13 @@ if (surfaceArea > 0.4) {
      //Numerical velocity and acceleration values visible:
      strokeWeight(0.00001); 
      fill(179, 226, 242); 
-     rect(215, 525, 200, 65);
+     rect(215, 530, 200, 62);
+     rect(215, 530, 200, 62);
      
      fill(0,0,0); 
      textSize(12); 
-     text("VELOCITY: " + Math.floor(cartVel), 230, 547); 
-     text("ACCELERATION: " + Math.floor(cartAccel), 230, 577);
+     text("VELOCITY: " + Math.floor(cartVel), 230, 552); 
+     text("ACCELERATION: " + round(cartAccel*100)/100, 230, 577);
      
      //Instructions
 
