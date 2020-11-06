@@ -78,6 +78,8 @@
          var graphX = 215; 
          var graphY = 300; 
          var erase = false; 
+         var recording = 1; 
+         var showing = 1; 
      
     //Instructions 
         var help = false; 
@@ -547,12 +549,18 @@ var errorMessage = function(message, x, y) {
  
         //Draw the record button 
          var drawRecordButton = function () {
+              
+             strokeWeight(0.0001); 
+             fill(250, 202, 100);  
+             rect(recButtonX-10, recButtonY-10, recButtonWidth, recButtonHeight); 
+             
              strokeWeight(3); 
              fill(38, 166, 45);
              rect(recButtonX, recButtonY, recButtonWidth, recButtonHeight); 
              fill(255,255,255);
              textSize(14); 
              text("RECORD", recButtonX+12, recButtonY+15, recButtonWidth, recButtonHeight); 
+            
 
          }; 
  
@@ -602,7 +610,7 @@ var errorMessage = function(message, x, y) {
     
      var maxAccel = (10); 
      var maxVel = 100; 
-     var maxTime = ((-16/3.141592654)*rampAngle) + 8; 
+     var maxTime = 0;  
      
         //Graph background
         fill(247, 247, 247);
@@ -610,7 +618,8 @@ var errorMessage = function(message, x, y) {
 
  //Drawing graphs 
  var drawResultsGraph = function() { 
-     
+     maxTime = 5.7*(sqrt(1/((sin(rampAngle-0.22))+0.5)))-2.5;
+    
     if (displayAccelResults === true) {
     
         strokeWeight(0.00001); 
@@ -629,7 +638,11 @@ var errorMessage = function(message, x, y) {
              //text(0, graphXPosition-20, graphYPosition+10); 
             
              text(9.81, graphXPosition-45, graphYPosition+10);
+        
+             text(0 + 's', graphXPosition+5, graphYPosition + 15 +  velDVRange);
              
+             text(round(maxTime) + 's', graphXPosition+5+velIVRange, graphYPosition + 15 +  velDVRange);
+        
     } 
     
     if (displayAccelResults === false) { 
@@ -651,8 +664,15 @@ var errorMessage = function(message, x, y) {
              text(-100, graphXPosition-45, graphYPosition + velDVRange);
              
              text(0, graphXPosition-30, graphYPosition + velDVRange/2); 
+             text(0, graphXPosition-30, graphYPosition + velDVRange/2); 
             
-             text(100, graphXPosition-40, graphYPosition + 10);      
+            
+             text(100, graphXPosition-40, graphYPosition + 10);  
+        
+             text(0 + 's', graphXPosition+5, graphYPosition + 15 +  velDVRange);
+        
+             text(round(maxTime) + 's', graphXPosition+5+velIVRange, graphYPosition + 15 +  velDVRange);
+        
     } 
 
 
@@ -670,7 +690,7 @@ var errorMessage = function(message, x, y) {
                         //Draw the ellipse
                          fill(255, 0, 0);
                          strokeWeight(3); 
-                         ellipse(graphXPosition+(((timerMsecond/1000)+timerSecond)/maxTime)*accelIVRange, ((graphYPosition+accelDVRange) - ((cartAccel/maxAccel)*accelDVRange)), 1, 1); 
+                         ellipse(graphXPosition+((timerMsecond/1000+timerSecond))*((accelIVRange)/(maxTime*0.5)), ((graphYPosition+accelDVRange) - ((cartAccel/maxAccel)*accelDVRange)), 1, 1); 
                          strokeWeight(0);     
                     } 
              } 
@@ -686,7 +706,7 @@ var errorMessage = function(message, x, y) {
                     //Draw the ellipse
                      strokeWeight(3); 
                      fill(255, 0, 0);
-                     ellipse(graphXPosition+(((timerMsecond/1000)+timerSecond)/maxTime)*velIVRange, ((graphYPosition+velDVRange) - (velDVRange/2) - ((cartVel/maxVel)*velDVRange)), 1, 1);  
+                     ellipse(graphXPosition+(((timerMsecond/1000)+timerSecond)/(maxTime*0.5))*velIVRange, ((graphYPosition+velDVRange) - (velDVRange/2) - ((cartVel/maxVel)*velDVRange)), 1, 1);  
                      strokeWeight(0); 
                  } 
                  
@@ -702,6 +722,12 @@ var errorMessage = function(message, x, y) {
   var seeArraysButtonHeight = 0;
  
  var showResultsButton = function (x,y,width,height) {
+     
+     strokeWeight(0.0001); 
+     fill(161, 228, 255);   
+     rect(x-15, y+height-15, 40, 40); 
+     
+     
      strokeWeight(3); 
      fill(5, 138, 136);
      rect(x, y, width, height); 
@@ -914,6 +940,7 @@ var drawVelocityTable = function() {
 /*****************************DRAW FUNCTION**********************************/ 
  var draw = function() {
      
+     
  //Background colours 
      
     strokeWeight(0.0001);
@@ -927,6 +954,12 @@ var drawVelocityTable = function() {
     
     fill(250, 202, 100); 
     rect(0,0,407,30); 
+     
+    fill(161, 228, 255); 
+    rect(graphXPosition-5, graphYPosition + velDVRange, velIVRange + 40, 50); 
+     
+
+     
      
      //TITLE
          fill(0,0,0); 
@@ -1068,8 +1101,10 @@ if (surfaceArea < 0.1) {
      //TABLE:
      if (show === true && help === false) { //Button clicked, instructions not in the way 
         
-         fill(40,60, 70); 
-         ellipse(seeArraysButtonX, seeArraysButtonY, 20, 20); 
+         
+         strokeWeight(2);
+         fill(0, 17, 252); 
+         ellipse(seeArraysButtonX, seeArraysButtonY+seeArraysButtonHeight, 20, 20); 
 
 
           fill(0,0,0); 
@@ -1083,6 +1118,7 @@ if (surfaceArea < 0.1) {
                  }     
              }
      }
+     
 };
 
 
@@ -1136,6 +1172,14 @@ if (surfaceArea < 0.1) {
      
       if (mouseX >= recButtonX && mouseX <= recButtonX+recButtonWidth && mouseY >= recButtonY && mouseY <= recButtonY+recButtonHeight) {
           record = true; 
+          recording = recording + 1; 
+          
+             if (recording%2 === 0) {
+                record = true; 
+            } else { 
+                record = false; 
+            }
+          
       }
       
        if (mouseX >= eraButtonX && mouseX <= eraButtonX+eraButtonWidth && mouseY >= eraButtonY && mouseY <= eraButtonY+eraButtonHeight) {
@@ -1152,6 +1196,15 @@ if (surfaceArea < 0.1) {
       
       if (mouseX >= seeArraysButtonX && mouseX <= seeArraysButtonX+seeArraysButtonWidth && mouseY >= seeArraysButtonY && mouseY <= seeArraysButtonY+seeArraysButtonHeight) {
            show = true; 
+           showing = showing + 1; 
+          
+           if (showing%2 === 0) {
+                show = true; 
+            } else { 
+                show = false; 
+            }
+          
+          
       }
      
      if (mouseX >= ix-iw && mouseX <= ix+iw*2 && mouseY >= iy-ih && mouseY <= iy+ih*2) {
@@ -1163,7 +1216,6 @@ if (surfaceArea < 0.1) {
      } else { 
          help = false; 
      }
-
 
          
      } 
