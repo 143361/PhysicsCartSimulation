@@ -918,7 +918,7 @@ var drawVelocityTable = function() {
      line(495, 435, 670, 435);
      line(495, 535, 670, 535);
 
-     text("VELOCITY" + "(m^-1)", 560, 430); 
+     text("VELOCITY" + "(ms^-1)", 560, 430); 
     //This is where the conversion of computational-calculated velocity must be converted to relaistic values 
         text(round(velResults[10]*comp2real*100)/100, 560, 450); 
         text(round(velResults[15]*comp2real*100)/100, 560, 470); 
@@ -1125,7 +1125,9 @@ if (surfaceArea < 0.1) {
                  }     
              }
      }
-     
+
+    fill(0,0,0);
+     text(displayAccelResults, 100, 100); 
      
 };
 
@@ -1153,6 +1155,7 @@ if (surfaceArea < 0.1) {
              timerMsecond = 0; 
          //GRAPH
              accelResults = []; 
+             velResults= []; 
              graphTime = []; 
              w = 0; 
              fill(247, 247, 247);
