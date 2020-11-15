@@ -111,11 +111,11 @@ var timer = function() {
         
         timerMsecond = Math.floor(((time/30) - timerSecond) * 1000); 
     
-    //Stop timing after a minute
-      if (timerSecond > 59) {
-            timeStatus = 0; //pause
-            timerSecond = 0; //Restart seconds
-            timerMsecond = 0; //Restart milliseconds
+    //Stop timing after 10 seconds
+      if (timerSecond > 10) {
+            fill(0,0,0);
+            errorMessage("You have been timing for over 10s", 30, 260);  
+            timeStatus = -1; 
         }
         
     } 
@@ -1035,11 +1035,6 @@ var drawVelocityTable = function() {
         drawEraseButton(); 
         
     //Error messages: 
- if (timerSecond > 10) { 
-     fill(0,0,0);
-    errorMessage("You have been timing for over 10s", 30, 260);  
-    timeStatus = -1; 
-}
 
 if (rampAngle >= 70*angleSetting) { 
     fill(0, 0, 0);
@@ -1125,7 +1120,6 @@ if (surfaceArea < 0.1) {
                  }     
              }
      }
-
      
 };
 
