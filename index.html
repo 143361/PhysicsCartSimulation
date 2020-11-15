@@ -39,7 +39,7 @@
          
      //Kinematics variables
          var surfaceArea = 0.25; 
-         var cD = 1/500; 
+         var cD = 3.5; 
          var g = 9.81; 
         
          var cartVel = 0; 
@@ -72,6 +72,10 @@
          var waitSomeTime = 0; 
          var timeNow = 0; 
      
+        //This value is was calculated to approximate the time difference between iterations of a function, which was used to convert the velocity calculated by the computer to its realistic value. 
+        var comp2real = 0.033; 
+        //The comp2real value was determined by calculating what the cart's velocity should be after a given time step. This was divided by the computer-calculated velocity to determine the ratio between the computer-calulated and real values. This ratio is multiplied by the computer-calculated velocity to scale to realistic measurements. 
+        
      //Recording trials 
          var record = false; 
          var timePassed = 20; 
@@ -107,11 +111,11 @@ var timer = function() {
         
         timerMsecond = Math.floor(((time/30) - timerSecond) * 1000); 
     
-    //Stop timing after a minute
-      if (timerSecond > 59) {
-            timeStatus = 0; //pause
-            timerSecond = 0; //Restart seconds
-            timerMsecond = 0; //Restart milliseconds
+    //Stop timing after 10 seconds
+      if (timerSecond > 10) {
+            fill(0,0,0);
+            errorMessage("You have been timing for over 10s", 30, 260);  
+            timeStatus = -1; 
         }
         
     } 
@@ -452,8 +456,12 @@ var timer = function() {
              rect(0, 22, 45, 5); 
              fill(94, 94, 94);
              rect(0, 0, 20, 20); 
+        
+        if (record === true) { 
              fill(255, 0,0);
              ellipse(13,6,4,4)
+        } 
+        
          popMatrix(); 
          
     }; 
@@ -468,17 +476,17 @@ var timer = function() {
 /**************************KINEMATICS EQUATION****************************/
         
 var scalingRatio = 0.99; //Fits values to screen 
-
+        
         var cartPlay = function() {
             //Rotate cart to the same angle as the ramp 
              cartAngle = rampAngle; 
         
                     if (bounced === false) { //Cart hasn't touched the barrier
                     
-                    airDrag = cD * ((1.225*cartVel*cartVel)/2) * surfaceArea;
+                    airDrag = cD*((1.225*cartVel*cartVel*comp2real*comp2real)/2)*surfaceArea;
                    
                         //If cart hasn't stopped moving 
-                    if (cartVel > 0)  {
+                    if (cartVel >= 0)  {
                       forceDownSlope = mass*g*sin(rampAngle) - airDrag; 
                     } else { 
                       forceDownSlope = mass*g*sin(rampAngle) + airDrag; 
@@ -507,7 +515,7 @@ var scalingRatio = 0.99; //Fits values to screen
                         bouncedTime = bouncedTime+1/33; 
                         
                             //Kinematics equations: 
-                            airDrag = cD * ((1.225*cartVel*cartVel)/2) * surfaceArea; 
+                            airDrag = cD * ((1.225*cartVel*cartVel*comp2real*comp2real)/2) * surfaceArea; 
                             forceDownSlope = mass*g*sin(rampAngle) - airDrag; 
                             cartAccel = forceDownSlope/mass; 
                             changeInDistance = cartVel*scalingRatio + 0.5*cartAccel;
@@ -608,7 +616,7 @@ var errorMessage = function(message, x, y) {
      var velDVRange = 200; 
      var velIVRange = 300; 
     
-     var maxAccel = (10); 
+     var maxAccel = 10; 
      var maxVel = 100; 
      var maxTime = 0;  
      
@@ -630,7 +638,7 @@ var errorMessage = function(message, x, y) {
      
             fill(0,0,0);
             textSize(15);
-            text("ACCEL (ms^2) versus time (s)", graphXPosition+50, graphYPosition-11); 
+            text("ACCEL (ms^-2) versus time (s)", graphXPosition+50, graphYPosition-11); 
             
              fill(0,0,0);
              text(0, graphXPosition-15, graphYPosition + accelDVRange);
@@ -657,17 +665,15 @@ var errorMessage = function(message, x, y) {
           rect(graphXPosition-20, graphYPosition-30, accelIVRange+30, 30); 
           textSize(15); 
           fill(0,0,0);
-          text("VELOCITY (ms^2) versus time (s)", graphXPosition+30, graphYPosition-11);
+          text("VELOCITY (ms^-1) versus time (s)", graphXPosition+30, graphYPosition-11);
         
           //Draw maximum, minimum and mid range axis labels 
           fill(0,0,0);
-             text(-100, graphXPosition-45, graphYPosition + velDVRange);
+             text(-3, graphXPosition-25, graphYPosition + velDVRange);
              
-             text(0, graphXPosition-30, graphYPosition + velDVRange/2); 
-             text(0, graphXPosition-30, graphYPosition + velDVRange/2); 
-            
-            
-             text(100, graphXPosition-40, graphYPosition + 10);  
+             text(0, graphXPosition-20, graphYPosition + velDVRange/2); 
+        
+             text(3, graphXPosition-20, graphYPosition + 10);  
         
              text(0 + 's', graphXPosition+5, graphYPosition + 15 +  velDVRange);
         
@@ -685,7 +691,7 @@ var errorMessage = function(message, x, y) {
 
                         //Push acceleration and time to arrays
                          accelResults.push(cartAccel); 
-                         graphTime.push(timerMsecond); 
+                         graphTime.push(timerMsecond/1000+timerSecond); 
 
                         //Draw the ellipse
                          fill(255, 0, 0);
@@ -701,7 +707,7 @@ var errorMessage = function(message, x, y) {
 
                     //Push acceleration and time to arrays 
                      velResults.push(cartVel); 
-                     graphTime.push(timerMsecond); 
+                     graphTime.push(timerMsecond/1000+timerSecond); 
 
                     //Draw the ellipse
                      strokeWeight(3); 
@@ -843,13 +849,13 @@ var apparatusList = function() {
         
     var drawInstructions = function() { 
         fill(250,250,250);
-         rect(500, 380, 300, 210);
+        rect(500, 380, 300, 210);
         
-         fill(0,0,0);
-         textSize(15); 
-         text("HOW TO USE THIS SIMULATION", 530, 410);
-         textSize(10); 
-         var IY = 430; 
+        fill(0,0,0);
+        textSize(15); 
+        text("HOW TO USE THIS SIMULATION", 530, 410);
+        textSize(10); 
+        var IY = 430; 
 
          text("1) View the live simulation in the top left of", 520, IY)
          text(" the screen", 520, IY+20); 
@@ -858,7 +864,7 @@ var apparatusList = function() {
          text("3) Click play, pause, and restart buttons to", 520, IY + 80); 
          text("control the simulation", 520, IY + 100);
          text("4) Click record and then 'Acceleration' or 'Velocity'", 520, IY + 120); 
-         text("to view their respective graphs", 520, IY + 140)
+         text("to view their respective graphs (or sample tables)", 520, IY + 140)
     } 
         
        
@@ -870,31 +876,31 @@ var apparatusList = function() {
          strokeWeight(2); 
          line(495, 415, 495, 535); 
          line(555, 415, 555, 535);
-         line(700, 415, 700, 535);
+         line(720, 415, 720, 535);
 
-         line(495, 415, 700, 415);
-         line(495, 435, 700, 435);
-         line(495, 535, 700, 535);
+         line(495, 415, 720, 415);
+         line(495, 435, 720, 435);
+         line(495, 535, 720, 535);
 
-         text("ACCELERATION (ms^2)", 560, 430);
-            text(Math.floor(accelResults[0]), 560, 450); 
-            text(Math.floor(accelResults[1]), 560, 470); 
-            text(Math.floor(accelResults[2]), 560, 490); 
-            text(Math.floor(accelResults[3]), 560, 510); 
-            text(Math.floor(accelResults[4]), 560, 530); 
+         text("ACCELERATION (ms^-2)", 560, 430);
+            text(round(accelResults[10]*100)/100, 560, 450); 
+            text(round(accelResults[15]*100)/100, 560, 470); 
+            text(round(accelResults[20]*100)/100, 560, 490); 
+            text(round(accelResults[25]*100)/100, 560, 510); 
+            text(round(accelResults[30]*100)/100, 560, 530); 
 
 
-         text("TIME (ms)", 500, 430); 
-            text(Math.floor(graphTime[0]), 500, 450); 
-            text(Math.floor(graphTime[1]), 500, 470); 
-            text(Math.floor(graphTime[2]), 500, 490); 
-            text(Math.floor(graphTime[3]), 500, 510); 
-            text(Math.floor(graphTime[4]), 500, 530); 
+         text("TIME (s)", 500, 430); 
+            text(round(graphTime[10]*100)/100, 500, 450); 
+            text(round(graphTime[15]*100)/100, 500, 470); 
+            text(round(graphTime[20]*100)/100, 500, 490); 
+            text(round(graphTime[25]*100)/100, 500, 510); 
+            text(round(graphTime[30]*100)/100, 500, 530); 
 
          fill(10,10,10); 
          textSize(10); 
-          text("If NaN displayed, you forgot to record acceleration!", 500, 555);
-          text("Restart and this time make sure to click 'ACCCELERATION'", 500, 575);
+          text("If NaN is displayed, you forgot to record acceleration!", 500, 555);
+          text("Restart, and make sure to click 'ACCCELERATION'", 500, 575);
           text("and 'RECORD' before playing...", 500, 585);  
 
  }; 
@@ -906,30 +912,31 @@ var drawVelocityTable = function() {
      strokeWeight(2); 
      line(495, 415, 495, 535); 
      line(555, 415, 555, 535);
-     line(650, 415, 650, 535);
+     line(670, 415, 670, 535);
 
-     line(495, 415, 650, 415);
-     line(495, 435, 650, 435);
-     line(495, 535, 650, 535);
+     line(495, 415, 670, 415);
+     line(495, 435, 670, 435);
+     line(495, 535, 670, 535);
 
-     text("VELOCITY" + "(ms)", 560, 430); 
-        text(Math.floor(velResults[0]), 560, 450); 
-        text(Math.floor(velResults[1]), 560, 470); 
-        text(Math.floor(velResults[2]), 560, 490); 
-        text(Math.floor(velResults[3]), 560, 510); 
-        text(Math.floor(velResults[4]), 560, 530); 
+     text("VELOCITY" + "(ms^-1)", 560, 430); 
+    //This is where the conversion of computational-calculated velocity must be converted to relaistic values 
+        text(round(velResults[10]*comp2real*100)/100, 560, 450); 
+        text(round(velResults[15]*comp2real*100)/100, 560, 470); 
+        text(round(velResults[20]*comp2real*100)/100, 560, 490); 
+        text(round(velResults[25]*comp2real*100)/100, 560, 510); 
+        text(round(velResults[30]*comp2real*100)/100, 560, 530); 
 
     text("TIME (s)", 500, 430); 
-        text(Math.floor(graphTime[0]), 500, 450); 
-        text(Math.floor(graphTime[1]), 500, 470); 
-        text(Math.floor(graphTime[2]), 500, 490); 
-        text(Math.floor(graphTime[3]), 500, 510); 
-        text(Math.floor(graphTime[4]), 500, 530); 
+        text(round(graphTime[10]*100)/100, 500, 450); 
+        text(round(graphTime[15]*100)/100, 500, 470); 
+        text(round(graphTime[20]*100)/100, 500, 490); 
+        text(round(graphTime[25]*100)/100, 500, 510); 
+        text(round(graphTime[30]*100)/100, 500, 530); 
 
      fill(10,10,10); 
      textSize(10); 
-      text("If NaN displayed, you forgot to record velocity!", 500, 555);
-      text("Restart and this time make sure to click 'VELOCITY'", 500, 575);
+      text("If NaN is displayed, you forgot to record velocity!", 500, 555);
+      text("Restart, and make sure to click 'VELOCITY'", 500, 575);
       text("and 'RECORD' before playing...", 500, 585); 
 
 };         
@@ -1028,11 +1035,6 @@ var drawVelocityTable = function() {
         drawEraseButton(); 
         
     //Error messages: 
- if (timerSecond > 10) { 
-     fill(0,0,0);
-    errorMessage("You have been timing for over 10s", 30, 260);  
-    timeStatus = -1; 
-}
 
 if (rampAngle >= 70*angleSetting) { 
     fill(0, 0, 0);
@@ -1145,6 +1147,7 @@ if (surfaceArea < 0.1) {
              timerMsecond = 0; 
          //GRAPH
              accelResults = []; 
+             velResults= []; 
              graphTime = []; 
              w = 0; 
              fill(247, 247, 247);
